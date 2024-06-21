@@ -9,7 +9,6 @@ from promptflow.evals.evaluators import RelevanceEvaluator, GroundednessEvaluato
 
 
 
-# # Monkey-patch the GroundednessEvaluator to use the custom prompty file
 # original_init = GroundednessEvaluator.__init__
 
 # def patched_init(self, model_config: AzureOpenAIModelConfiguration):
@@ -19,10 +18,37 @@ from promptflow.evals.evaluators import RelevanceEvaluator, GroundednessEvaluato
 #     prompty_model_config = {"configuration": model_config}
 #     # Update the file path to point to your custom directory
 #     current_dir = os.path.dirname(__file__)
-#     prompty_path = os.path.join(current_dir, "custom.prompty")
+#     prompty_path = os.path.join(current_dir, "custom_groundness.prompty")
+#     print(f"Loading prompt file from: {prompty_path}")  # Print statement to check which prompt file is being used
+
 #     self._flow = load_flow(source=prompty_path, model=prompty_model_config)
 
 # GroundednessEvaluator.__init__ = patched_init
+
+
+def patch_evaluator(evaluator_class, prompty_file_name):
+    original_init = evaluator_class.__init__
+
+    def patched_init(self, model_config: AzureOpenAIModelConfiguration):
+        original_init(self, model_config)  # Call the original __init__
+        
+        if model_config.api_version is None:
+            model_config.api_version = "2024-02-15-preview"
+
+        prompty_model_config = {"configuration": model_config}
+        current_dir = os.path.dirname(__file__)
+        prompty_path = os.path.join(current_dir, prompty_file_name)
+
+        print(f"Loaded prompt file from: {prompty_path}")
+        self._flow = load_flow(source=prompty_path, model=prompty_model_config)
+
+    evaluator_class.__init__ = patched_init
+
+
+patch_evaluator(RelevanceEvaluator, "custom_relevance.prompty")
+patch_evaluator(GroundednessEvaluator, "custom_groundness.prompty")
+patch_evaluator(FluencyEvaluator, "custom_fluency.prompty")
+patch_evaluator(CoherenceEvaluator, "custom_coherence.prompty")
 
 class ArticleEvaluator:
     def __init__(self, model_config):
