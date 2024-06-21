@@ -1,0 +1,16 @@
+{
+  "chat_list": [],
+  "prompty_chat_list": [
+    {
+      "name": "researcher.prompty",
+      "inputs": {
+        "instructions": " Can you find the relevant information needed and good places to visit",
+        "feedback": " No feedback",
+        "context": "Can you find the latest camping trends and what folks are doing in the winter?"
+      }
+    }
+  ],
+  "init": {
+    "researcher.prompty": {}
+  }
+}
