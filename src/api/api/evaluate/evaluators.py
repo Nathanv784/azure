@@ -9,20 +9,20 @@ from promptflow.evals.evaluators import RelevanceEvaluator, GroundednessEvaluato
 
 
 
-# Monkey-patch the GroundednessEvaluator to use the custom prompty file
-original_init = GroundednessEvaluator.__init__
+# # Monkey-patch the GroundednessEvaluator to use the custom prompty file
+# original_init = GroundednessEvaluator.__init__
 
-def patched_init(self, model_config: AzureOpenAIModelConfiguration):
-    if model_config.api_version is None:
-        model_config.api_version = "2024-02-15-preview"
+# def patched_init(self, model_config: AzureOpenAIModelConfiguration):
+#     if model_config.api_version is None:
+#         model_config.api_version = "2024-02-15-preview"
 
-    prompty_model_config = {"configuration": model_config}
-    # Update the file path to point to your custom directory
-    current_dir = os.path.dirname(__file__)
-    prompty_path = os.path.join(current_dir, "custom.prompty")
-    self._flow = load_flow(source=prompty_path, model=prompty_model_config)
+#     prompty_model_config = {"configuration": model_config}
+#     # Update the file path to point to your custom directory
+#     current_dir = os.path.dirname(__file__)
+#     prompty_path = os.path.join(current_dir, "custom.prompty")
+#     self._flow = load_flow(source=prompty_path, model=prompty_model_config)
 
-GroundednessEvaluator.__init__ = patched_init
+# GroundednessEvaluator.__init__ = patched_init
 
 class ArticleEvaluator:
     def __init__(self, model_config):
